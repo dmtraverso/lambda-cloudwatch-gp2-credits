@@ -41,8 +41,10 @@ function getVolumeMetric(volume_id, metric, callback) {
             callback(err.stack);
         }
         else {
+            //console.log(data);
             if (data.Datapoints.length !== 0) {
-                callback(null, data.Datapoints[0].Sum); 
+                //console.log(data);
+                callback(data.Datapoints[0].Sum); 
             }
             else {
                 callback(0);
@@ -71,7 +73,7 @@ function getMetrics(vol, callback) {
     }, function(err, results) {
 
             // results is now equals to: {one: 'abc\n', two: 'xyz\n'}
-            //console.log(results);
+            console.log('Results', results);
             //callback(results.ReadOps + results.WriteOps);
             callback(results.ReadOps + results.WriteOps);
     });
@@ -90,6 +92,11 @@ exports.handler = (event, context, callback) => {
             Values: [
                 'true',
             ]
+        }, {
+            Name: 'attachment.status',
+            Values: [
+                'attached'
+            ]
         }]
     };
 
@@ -97,6 +104,24 @@ exports.handler = (event, context, callback) => {
         if (err) console.log(err, err.stack); // an error occurred
         //else     console.log(data);           // successful response
 
+     /*   async.each(data.Volumes, function(volume, callback) {
+
+            // Perform operation on file here.
+            console.log('Processing volume ' + volume.VolumeId);
+            getMetrics(volume, (results) => {
+                console.log(results);
+                callback();
+            });
+        }, function(err){
+            // if any of the file processing produced an error, err would equal that error
+            if (err) {
+              // One of the iterations produced an error.
+              // All processing will now stop.
+              console.log('A file failed to process');
+            } else {
+              console.log('All files have been processed successfully');
+            }
+        });*/
         var itemsProcessed = 0;
         data.Volumes.forEach((item, index, array) => {
             getMetrics(item, (results) => {
@@ -106,7 +131,7 @@ exports.handler = (event, context, callback) => {
                     callback(null, 'OK'); // Echo back the first key value
                 }
             });
-        });
+        }); 
     });
 
     // callback('Something went wrong');
