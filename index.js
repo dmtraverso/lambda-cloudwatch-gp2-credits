@@ -73,7 +73,7 @@ function getMetrics(vol, callback) {
     }, function(err, results) {
 
             // results is now equals to: {one: 'abc\n', two: 'xyz\n'}
-            console.log('Results', results);
+            //console.log('Results', results);
             //callback(results.ReadOps + results.WriteOps);
             callback(results.ReadOps + results.WriteOps);
     });
@@ -104,12 +104,12 @@ exports.handler = (event, context, callback) => {
         if (err) console.log(err, err.stack); // an error occurred
         //else     console.log(data);           // successful response
 
-     /*   async.each(data.Volumes, function(volume, callback) {
+        async.each(data.Volumes, function(volume, callback) {
 
             // Perform operation on file here.
             console.log('Processing volume ' + volume.VolumeId);
-            getMetrics(volume, (results) => {
-                console.log(results);
+            getMetrics(volume, (volune_total_iops) => {
+                console.log('Total IOPS: ', volune_total_iops)
                 callback();
             });
         }, function(err){
@@ -121,17 +121,8 @@ exports.handler = (event, context, callback) => {
             } else {
               console.log('All files have been processed successfully');
             }
-        });*/
-        var itemsProcessed = 0;
-        data.Volumes.forEach((item, index, array) => {
-            getMetrics(item, (results) => {
-                console.log(results);
-                itemsProcessed++;
-                if (itemsProcessed === array.length) {
-                    callback(null, 'OK'); // Echo back the first key value
-                }
-            });
-        }); 
+        });
+
     });
 
     // callback('Something went wrong');
